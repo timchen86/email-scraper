@@ -16,18 +16,18 @@ import datetime
 class HsItem(Item):
     # define the fields for your item here like:
     mail = Field()
-    tomail = Field()
+    mailto = Field()
     link = Field()
 
 class HsSpider(BaseSpider):
     name = "hs"
     #allowed_domains = ["www.missingkids.org.tw"]
     start_urls = ["http://www.nssh.ntpc.edu.tw/bin/home.php"]
-    ext_urls = []
 
     def __init__(self):
         #dispatcher.connect(self.engine_stopped, signals.engine_stopped)
         pass
+
 
     def parse(self, response):
         hxs = HtmlXPathSelector(response)
@@ -41,8 +41,8 @@ class HsSpider(BaseSpider):
     def mail_parser(self, response):
         hxs = HtmlXPathSelector(response)
         item = HsItem()
-        tomail = hxs.select("//a[@href]").re("mailto:(.*?)[,\"%\?]{1}")
-        mail = tomail + hxs.select("//text()").re("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
+        mailto = hxs.select("//a[@href]").re("mailto:(.*?)[,\"%\?]{1}")
+        mail = mailto + hxs.select("//text()").re("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
         
         item['mail'] = list(set(mail))
         
