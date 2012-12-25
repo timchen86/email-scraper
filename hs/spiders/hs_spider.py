@@ -24,13 +24,19 @@ class HsItem(Item):
 class HsSpider(BaseSpider):
     name = "hs"
     #allowed_domains = ["www.missingkids.org.tw"]
-    start_urls = ["http://www.nssh.ntpc.edu.tw/bin/home.php"]
+    start_urls = []
 
-    i = 0
+    with open(settings.SITE_LIST, "rb") as site_file:
+        for l in site_file:
+            if "http://" not in l:
+                start_urls.append("http://"+l.rstrip())
+            else:
+                start_urls.append(l.rstrip())
+
+    print start_urls
 
     def __init__(self):
         dispatcher.connect(self.engine_stopped, signals.engine_stopped)
-        pass
 
 
     def parse(self, response):
@@ -45,9 +51,7 @@ class HsSpider(BaseSpider):
 
         for u in urls:
             if base1 in u or base2 in u:
-                self.i+=1
-                if self.i<300:
-                    yield Request(u, self.mail_parser)
+                yield Request(u, self.mail_parser)
 
 
     def mail_parser(self, response):
