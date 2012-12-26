@@ -5,7 +5,7 @@
 
 from scrapy.item import Item, Field
 
-class HsItem(Item):
+class EmItem(Item):
     # define the fields for your item here like:
     # name = Field()
     pass

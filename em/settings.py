@@ -7,10 +7,10 @@
 #
 import os
 
-BOT_NAME = 'hs'
+BOT_NAME = 'em'
 
-SPIDER_MODULES = ['hs.spiders']
-NEWSPIDER_MODULE = 'hs.spiders'
+SPIDER_MODULES = ['em.spiders']
+NEWSPIDER_MODULE = 'em.spiders'
 
 RAW_JSON = os.path.expanduser('~/%s_raw.json' % BOT_NAME) 
 SORTED_JSON = os.path.expanduser('~/%s.json' % BOT_NAME)

@@ -6,7 +6,7 @@ from scrapy.item import Item, Field
 from scrapy import signals
 from scrapy.xlib.pydispatch import dispatcher
 
-import hs.settings as settings
+import em.settings as settings
 
 from urlparse import urlparse
 import json
@@ -16,13 +16,13 @@ import csv
 import datetime 
 import pprint 
 
-class HsItem(Item):
+class EmItem(Item):
     # define the fields for your item here like:
     domain = Field()
     mail = Field()
 
-class HsSpider(BaseSpider):
-    name = "hs"
+class EmSpider(BaseSpider):
+    name = "em"
     #allowed_domains = ["www.missingkids.org.tw"]
     start_urls = []
 
@@ -57,7 +57,7 @@ class HsSpider(BaseSpider):
 
     def mail_parser(self, response):
         hxs = HtmlXPathSelector(response)
-        item = HsItem()
+        item = EmItem()
         mailrex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
         mailto = hxs.select("//a[@href]").re("mailto:(%s)" % mailrex)
         mail = mailto + hxs.select("//text()").re(mailrex)
