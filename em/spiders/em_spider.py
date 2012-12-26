@@ -5,6 +5,7 @@ from scrapy.selector import HtmlXPathSelector
 from scrapy.item import Item, Field
 from scrapy import signals
 from scrapy.xlib.pydispatch import dispatcher
+from scrapy import log
 
 import em.settings as settings
 
@@ -26,14 +27,18 @@ class EmSpider(BaseSpider):
     #allowed_domains = [""]
     start_urls = []
 
-    with open(settings.SITE_LIST, "rb") as site_file:
-        for l in site_file:
-            if "http://" not in l:
-                start_urls.append("http://"+l.rstrip())
-            else:
-                start_urls.append(l.rstrip())
+    try:
+        with open(settings.SITE_LIST, "rb") as site_file:
+            for l in site_file:
+                if "http://" not in l:
+                    start_urls.append("http://"+l.rstrip())
+                else:
+                    start_urls.append(l.rstrip())
+    except: 
+        log.msg("error: %s not exists" % settings.SITE_LIST, level=log.ERROR)
+        raise
 
-    print start_urls
+    log.msg("start_urls: %s" % start_urls, level=log.INFO)
 
     def __init__(self):
         dispatcher.connect(self.engine_stopped, signals.engine_stopped)
@@ -71,19 +76,27 @@ class EmSpider(BaseSpider):
 
         
     def engine_stopped(self):
-        with open(settings.RAW_JSON,"rb") as json_file:
-            data_raw = json.load(json_file)
-               
-            data = []
+        try:
+            with open(settings.RAW_JSON,"rb") as json_file:
+                data_raw = json.load(json_file)
+                   
+                data = []
 
-            for dr in data_raw:
-                if dr["domain"] not in [s["domain"] for s in data]:
-                    data.append(dr)
-                else:
-                    for d in data:
-                        if d["domain"] == dr["domain"]:
-                            d["mail"] += dr["mail"]
-                        d["mail"] = list(set(d["mail"]))    
-                        
-            with open(settings.SORTED_JSON, 'wb') as json_file:
-                json.dump(data, json_file)
+                for dr in data_raw:
+                    if dr["domain"] not in [s["domain"] for s in data]:
+                        data.append(dr)
+                    else:
+                        for d in data:
+                            if d["domain"] == dr["domain"]:
+                                d["mail"] += dr["mail"]
+                            d["mail"] = list(set(d["mail"]))    
+                try:                             
+                    with open(settings.SORTED_JSON, 'wb') as json_file:
+                        json.dump(data, json_file)
+                except:
+                    log.msg("error: open %s" % settings.SORTED_JSON, level=log.ERROR)
+                    raise
+                                    
+        except:
+            log.msg("error: open %s" % settings.RAW_JSON, level=log.ERROR)
+            raise
