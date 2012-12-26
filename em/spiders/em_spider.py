@@ -23,7 +23,7 @@ class EmItem(Item):
 
 class EmSpider(BaseSpider):
     name = "em"
-    #allowed_domains = ["www.missingkids.org.tw"]
+    #allowed_domains = [""]
     start_urls = []
 
     with open(settings.SITE_LIST, "rb") as site_file:
