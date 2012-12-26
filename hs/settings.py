@@ -19,6 +19,10 @@ SITE_LIST = os.path.expanduser('./site')
 FEED_URI = RAW_JSON
 FEED_FORMAT = "JSON"
 
+
+DOWNLOAD_TIMEOUT = 60
+DOWNLOAD_DELAY = 0.2
+
 #LOG_FILE = os.path.expanduser('./%s.log' % NEWSPIDER_MODULE)
 #LOG_STDOUT = True
 
