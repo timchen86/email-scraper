@@ -46,9 +46,10 @@ class HsSpider(BaseSpider):
 
         domain = urlparse(response.url).netloc
         ds = domain.split('.')
-        base1 = ds[len(ds)-2]
-        base2 = ds[len(ds)-3]
+        base1 = ds[-4]
+        base2 = ds[-3]
 
+        # make sure the parsed url is the domain related.
         for u in urls:
             if base1 in u or base2 in u:
                 yield Request(u, self.mail_parser)
@@ -57,11 +58,12 @@ class HsSpider(BaseSpider):
     def mail_parser(self, response):
         hxs = HtmlXPathSelector(response)
         item = HsItem()
-        mailto = hxs.select("//a[@href]").re("mailto:(.*?)[,\"%\?]{1}")
-        mail = mailto + hxs.select("//text()").re("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}")
+        mailrex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}"
+        mailto = hxs.select("//a[@href]").re("mailto:(%s)" % mailrex)
+        mail = mailto + hxs.select("//text()").re(mailrex)
  
         domain = urlparse(response.url).netloc.split('.')
-        item['domain'] = '.'.join(domain[(len(domain)-4):])
+        item['domain'] = '.'.join(domain[-4:])
         item['mail'] = list(set(mail))
 
         if len(item['mail'])>0:
